@@ -1,5 +1,5 @@
 #include <string>
-#include "Helpers/Matrix.h"
+#include "../Helpers/Matrix.h"
 using string = std::string;
 
 class StringDistanceResolver

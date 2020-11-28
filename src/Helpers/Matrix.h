@@ -11,7 +11,6 @@ public:
 
     int cols() const;
     int rows() const;
-    const int **matrix() const;
 };
 
 Matrix::Matrix(int rows, int cols)
@@ -40,9 +39,4 @@ int Matrix::rows() const
 int Matrix::cols() const
 {
     return this->_cols;
-}
-
-const int **Matrix::matrix() const
-{
-    return _matrix;
 }

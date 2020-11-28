@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <omp.h>
 #include "Services/FileReader.h"
+#include "Services/StringDistanceResolver.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +21,11 @@ int main(int argc, char *argv[])
 
     std::cout << lfile_content << std::endl;
     std::cout << rfile_content << std::endl;
+
+    auto resolver = StringDistanceResolver();
+    auto distance = resolver.get_leventshtein_distance(lfile_content, rfile_content);
+
+    std::cout << distance << std::endl;
 
     // #pragma omp parallel for
     //     for (int i = 0; i < size; i++)
