@@ -8,6 +8,7 @@
             "type": "shell",
             "command": "g++ src/*.cpp -fopenmp -o out/bin",
             "group": "build",
+            "problemMatcher": []
         }
     ]
 }
