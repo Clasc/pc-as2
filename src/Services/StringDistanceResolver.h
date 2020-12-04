@@ -42,7 +42,7 @@ void StringDistanceResolver::calculate_steps(Matrix &matrix)
             data[i][j] = data[i][j] < data[i][j - 1] ? data[i][j] : data[i - 1][j];
             data[i][j] = data[i][j] < data[i - 1][j - 1] ? data[i][j] : data[i - 1][j - 1];
 
-            if (matrix.l_str()[i] != matrix.r_str()[j])
+            if (matrix.l_str()[i - 1] != matrix.r_str()[j - 1])
             {
                 data[i][j]++;
             }

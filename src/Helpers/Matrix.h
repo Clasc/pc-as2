@@ -38,12 +38,12 @@ Matrix::~Matrix()
 
 int Matrix::rows() const
 {
-    return this->_l_str.length();
+    return this->_l_str.length() + 1;
 }
 
 int Matrix::cols() const
 {
-    return this->_r_str.length();
+    return this->_r_str.length() + 1;
 }
 
 int **Matrix::raw() const
