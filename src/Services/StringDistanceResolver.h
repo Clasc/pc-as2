@@ -24,11 +24,11 @@ int StringDistanceResolver::get_leventshtein_distance(string str_l, string str_r
 {
     auto cols = str_l.length();
     auto rows = str_r.length();
-    auto matrix = Matrix(rows, cols);
+    auto matrix = Matrix(str_l, str_r);
     prefill_levenshtein(matrix);
     calculate_steps(matrix);
-    std::cout << matrix.to_string();
-    return -1;
+    std::cout << matrix.to_string() << std::endl;
+    return matrix.final_distance();
 }
 
 void StringDistanceResolver::calculate_steps(Matrix &matrix)
@@ -41,7 +41,11 @@ void StringDistanceResolver::calculate_steps(Matrix &matrix)
             data[i][j] = data[i - 1][j];
             data[i][j] = data[i][j] < data[i][j - 1] ? data[i][j] : data[i - 1][j];
             data[i][j] = data[i][j] < data[i - 1][j - 1] ? data[i][j] : data[i - 1][j - 1];
-            data[i][j]++;
+
+            if (matrix.l_str()[i] != matrix.r_str()[j])
+            {
+                data[i][j]++;
+            }
         }
     }
 }
