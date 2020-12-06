@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdio>
 #include <omp.h>
+#include <chrono>
 #include "Services/FileReader.h"
 #include "Services/StringDistanceResolver.h"
 
@@ -16,27 +17,19 @@ int main(int argc, char *argv[])
     }
 
     FileReader reader = FileReader();
+
     auto lfile_content = reader.get_content(argv[1]);
     auto rfile_content = reader.get_content(argv[2]);
 
-    std::cout << lfile_content << std::endl;
-    std::cout << rfile_content << std::endl;
+    auto t1 = std::chrono::high_resolution_clock::now();
 
     auto resolver = StringDistanceResolver();
     auto distance = resolver.get_leventshtein_distance(lfile_content, rfile_content);
 
-    std::cout << distance << std::endl;
+    auto t2 = std::chrono::high_resolution_clock::now();
 
-    // #pragma omp parallel for
-    //     for (int i = 0; i < size; i++)
-    //     {
-    //         array[i] = i;
-    //     }
-
-    //     for (int i = 0; i < size; i++)
-    //     {
-    //         std::cout << array[i];
-    //     }
+    std::cout << "calculation time: " << std::chrono::duration<double>(t2 - t1).count() << std::endl;
+    std::cout << "levenshtein distance:" << distance << std::endl;
 
     delete[] array;
 

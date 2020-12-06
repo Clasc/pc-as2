@@ -25,9 +25,11 @@ int StringDistanceResolver::get_leventshtein_distance(string str_l, string str_r
     auto cols = str_l.length();
     auto rows = str_r.length();
     auto matrix = Matrix(str_l, str_r);
-    prefill_levenshtein(matrix);
-    calculate_steps(matrix);
-    std::cout << matrix.to_string() << std::endl;
+#pragma openmp parallel
+    {
+        prefill_levenshtein(matrix);
+        calculate_steps(matrix);
+    }
     return matrix.final_distance();
 }
 
@@ -44,8 +46,16 @@ void StringDistanceResolver::calculate_steps(Matrix &matrix)
         for (int j = 1; j < cols; j++)
         {
             data[i][j] = data[i - 1][j];
-            data[i][j] = data[i][j] < data[i][j - 1] ? data[i][j] : data[i][j - 1];
-            data[i][j] = data[i][j] < data[i - 1][j - 1] ? data[i][j] : data[i - 1][j - 1];
+
+            if (data[i][j] > data[i][j - 1])
+            {
+                data[i][j] = data[i][j - 1];
+            }
+
+            if (data[i][j] > data[i - 1][j - 1])
+            {
+                data[i][j] = data[i - 1][j - 1];
+            }
 
             if (matrix.l_str()[i - 1] != matrix.r_str()[j - 1])
             {
