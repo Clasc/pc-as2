@@ -22,8 +22,7 @@ StringDistanceResolver::StringDistanceResolver(/* args */)
 
 int StringDistanceResolver::get_leventshtein_distance(string str_l, string str_r)
 {
-    auto cols = str_l.length();
-    auto rows = str_r.length();
+
     auto matrix = Matrix(str_l, str_r);
 #pragma openmp parallel
     {
