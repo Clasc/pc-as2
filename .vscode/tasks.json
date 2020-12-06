@@ -6,9 +6,30 @@
         {
             "label": "build with open mp",
             "type": "shell",
-            "command": "g++ src/*.cpp -fopenmp -o out/bin",
+            "command": "g++ src/*.cpp -fopenmp -o out/multithread.o",
             "group": "build",
             "problemMatcher": []
-        }
+        },
+        {
+            "label": "build single thread",
+            "type": "shell",
+            "command": "g++ src/*.cpp -o out/singlethread.o",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "run single thread",
+            "type": "shell",
+            "command": "out/singlethread.o res/test1.txt  res/test2.txt",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "run multi thread",
+            "type": "shell",
+            "command": "out/multithread.o  res/test1.txt  res/test2.txt",
+            "group": "none",
+            "problemMatcher": []
+        },
     ]
 }
