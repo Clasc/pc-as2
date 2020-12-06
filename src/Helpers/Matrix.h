@@ -23,6 +23,7 @@ Matrix::Matrix(string l_str, string r_str)
     _l_str = l_str;
     _r_str = r_str;
     _matrix = new int *[rows()];
+#pragma openmp parallel for
     for (int i = 0; i < rows(); i++)
     {
         _matrix[i] = new int[cols()];
@@ -31,6 +32,7 @@ Matrix::Matrix(string l_str, string r_str)
 
 Matrix::~Matrix()
 {
+#pragma openmp parallel for
     for (int i = 0; i < rows(); ++i)
         delete[] _matrix[i];
     delete[] _matrix;
