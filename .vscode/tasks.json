@@ -6,7 +6,7 @@
         {
             "label": "build with open mp",
             "type": "shell",
-            "command": "g++ src/*.cpp -fopenmp -o out/multithread.o",
+            "command": "g++ src/*.cpp -fopenmp -o out/multithread.o -O2",
             "group": "build",
             "problemMatcher": []
         },
