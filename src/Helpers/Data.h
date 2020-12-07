@@ -37,7 +37,7 @@ int Data::rows() const
 
 int Data::cols() const
 {
-    return this->_r_str.length() + 1;
+    return this->_r_str.length();
 }
 
 string Data::l_str() const

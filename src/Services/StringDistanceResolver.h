@@ -45,9 +45,19 @@ int StringDistanceResolver::calculate_steps(Data &data)
         for (int i = 1; i < rows; i++)
         {
 
-            auto new_dist = vector[i - 1] < i - 1 ? vector[i - 1] : i - 1;
+            auto new_dist = distance;
 
-            if (data.l_str()[i - 1] != data.r_str()[i - 1])
+            if (new_dist > i - 1)
+            {
+                new_dist = i - 1;
+            }
+
+            if (new_dist > vector[i - 1])
+            {
+                new_dist = vector[i - 1];
+            }
+
+            if (data.l_str()[i - 1] != data.r_str()[j])
             {
                 new_dist++;
             }
