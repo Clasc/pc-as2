@@ -1,5 +1,5 @@
 #include <string>
-#include "../Helpers/Matrix.h"
+#include "../Helpers/Data.h"
 using string = std::string;
 
 class StringDistanceResolver
@@ -11,9 +11,7 @@ public:
 
     int get_leventshtein_distance(string, string);
 
-    void calculate_steps(Matrix &);
-
-    void prefill_levenshtein(Matrix &);
+    int calculate_steps(Data &);
 };
 
 StringDistanceResolver::StringDistanceResolver(/* args */)
@@ -23,60 +21,43 @@ StringDistanceResolver::StringDistanceResolver(/* args */)
 int StringDistanceResolver::get_leventshtein_distance(string str_l, string str_r)
 {
 
-    auto matrix = Matrix(str_l, str_r);
+    auto matrix = Data(str_l, str_r);
+    int distance;
 #pragma omp parallel
     {
-        prefill_levenshtein(matrix);
-        calculate_steps(matrix);
+        distance = calculate_steps(matrix);
     }
-    return matrix.final_distance();
+    return distance;
 }
 
-void StringDistanceResolver::calculate_steps(Matrix &matrix)
+int StringDistanceResolver::calculate_steps(Data &data)
 {
-    auto data = matrix.raw();
-    auto rows = matrix.rows();
-    auto cols = matrix.cols();
-
-    for (int i = 1; i < rows; i++)
-    {
+    auto rows = data.rows();
+    auto cols = data.cols();
+    auto vector = std::vector<int>(rows);
+    auto distance = 0;
 
 #pragma omp parallel for
-        for (int j = 1; j < cols; j++)
+    for (int j = 0; j < cols; j++)
+    {
+        distance = j + 1;
+
+        for (int i = 1; i < rows; i++)
         {
-            data[i][j] = data[i - 1][j];
 
-            if (data[i][j] > data[i][j - 1])
+            auto new_dist = vector[i - 1] < i - 1 ? vector[i - 1] : i - 1;
+
+            if (data.l_str()[i - 1] != data.r_str()[i - 1])
             {
-                data[i][j] = data[i][j - 1];
+                new_dist++;
             }
 
-            if (data[i][j] > data[i - 1][j - 1])
-            {
-                data[i][j] = data[i - 1][j - 1];
-            }
-
-            if (matrix.l_str()[i - 1] != matrix.r_str()[j - 1])
-            {
-                data[i][j]++;
-            }
+            vector[i - 1] = distance;
+            distance = new_dist;
         }
-    }
-}
 
-void StringDistanceResolver::prefill_levenshtein(Matrix &matrix)
-{
-    auto data = matrix.raw();
-
-#pragma omp parallel for
-    for (int i = 0; i < matrix.rows(); i++)
-    {
-        data[i][0] = i;
+        vector[rows - 1] = distance;
     }
 
-#pragma omp parallel for
-    for (int i = 0; i < matrix.cols(); i++)
-    {
-        data[0][i] = i;
-    }
+    return distance;
 }
