@@ -24,7 +24,7 @@ int StringDistanceResolver::get_leventshtein_distance(string str_l, string str_r
 {
 
     auto matrix = Matrix(str_l, str_r);
-#pragma openmp parallel
+#pragma omp parallel
     {
         prefill_levenshtein(matrix);
         calculate_steps(matrix);
@@ -41,7 +41,7 @@ void StringDistanceResolver::calculate_steps(Matrix &matrix)
     for (int i = 1; i < rows; i++)
     {
 
-#pragma openmp parallel for
+#pragma omp parallel for
         for (int j = 1; j < cols; j++)
         {
             data[i][j] = data[i - 1][j];
@@ -68,13 +68,13 @@ void StringDistanceResolver::prefill_levenshtein(Matrix &matrix)
 {
     auto data = matrix.raw();
 
-#pragma openmp parallel for
+#pragma omp parallel for
     for (int i = 0; i < matrix.rows(); i++)
     {
         data[i][0] = i;
     }
 
-#pragma openmp parallel for
+#pragma omp parallel for
     for (int i = 0; i < matrix.cols(); i++)
     {
         data[0][i] = i;
