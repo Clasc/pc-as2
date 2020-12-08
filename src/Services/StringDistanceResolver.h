@@ -122,32 +122,23 @@ int StringDistanceResolver::get_distance_two_vec(string str_l, string str_r)
         // first element of v1 is A[i+1][0]
         //   edit distance is delete (i+1) chars from s to match empty t
         v1[0] = i + 1;
-        int deletionCost = 0;
-        int insertionCost = 0;
-        int substitutionCost = 0;
 
         // use formula to fill in the rest of the row
         for (int j = 0; j < rows - 1; j++)
         {
             // calculating costs for A[i+1][j+1]
-            deletionCost = v0[j + 1] + 1;
-            insertionCost = v1[j] + 1;
 
-            if (str_l[i] == str_r[j])
+            v1[j + 1] = get_min(v0[j + 1] + 1, v1[j] + 1, v0[j]);
+
+            if (str_l[i] != str_r[j])
             {
-                substitutionCost = v0[j];
+                v1[j + 1]++;
             }
-            else
-            {
-                substitutionCost = v0[j] + 1;
-            }
-
-            v1[j + 1] = get_min(deletionCost, insertionCost, substitutionCost);
-
             // copy v1 (current row) to v0 (previous row) for next iteration
             // since data in v1 is always invalidated, a swap without copy could be more efficient
         }
         //swap v0 with v1
+        v0 = v1;
         // after the last swap, the results of v1 are now in v0
     }
     return v0[rows];

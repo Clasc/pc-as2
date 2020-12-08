@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     auto resolver = StringDistanceResolver();
     auto distance = resolver.get_distance_vec(lfile_content, rfile_content);
     //auto distance = resolver.get_distance_matrix(lfile_content, rfile_content);
+    //auto distance = resolver.get_distance_two_vec(lfile_content, rfile_content);
 
     auto t2 = std::chrono::high_resolution_clock::now();
 
