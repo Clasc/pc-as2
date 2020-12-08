@@ -1,5 +1,5 @@
 #include <string>
-#include "../Helpers/Data.h"
+#include <vector>
 using string = std::string;
 
 class StringDistanceResolver
@@ -10,8 +10,6 @@ public:
     StringDistanceResolver(/* args */);
 
     int get_leventshtein_distance(string, string);
-
-    int calculate_steps(Data &);
 };
 
 StringDistanceResolver::StringDistanceResolver(/* args */)
@@ -20,20 +18,8 @@ StringDistanceResolver::StringDistanceResolver(/* args */)
 
 int StringDistanceResolver::get_leventshtein_distance(string str_l, string str_r)
 {
-
-    auto matrix = Data(str_l, str_r);
-    int distance;
-#pragma omp parallel
-    {
-        distance = calculate_steps(matrix);
-    }
-    return distance;
-}
-
-int StringDistanceResolver::calculate_steps(Data &data)
-{
-    auto rows = data.rows();
-    auto cols = data.cols();
+    auto rows = str_l.length() + 1;
+    auto cols = str_r.length();
     auto vector = std::vector<int>(rows);
     auto distance = 0;
 
@@ -57,7 +43,7 @@ int StringDistanceResolver::calculate_steps(Data &data)
                 new_dist = vector[i - 1];
             }
 
-            if (data.l_str()[i - 1] != data.r_str()[j])
+            if (str_l[i - 1] != str_r[j])
             {
                 new_dist++;
             }
