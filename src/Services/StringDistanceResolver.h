@@ -34,21 +34,21 @@ int StringDistanceResolver::get_distance_vec(string str_l, string str_r)
 
     for (int i = 0; i < rows; i++)
     {
-        auto last_subs_cost = i;
-        auto last_insert_cost = i + 1;
+        auto last_substitution = i;
+        auto last_insert = i + 1;
 
         for (int j = 0; j < cols; j++)
         {
             auto deletion = previous_row[j];
-            last_insert_cost = get_min(last_insert_cost, last_subs_cost, deletion);
+            last_insert = get_min(last_insert, last_substitution, deletion);
 
             if (str_l[i] != str_r[j])
             {
-                last_insert_cost++;
+                last_insert++;
             }
 
-            last_subs_cost = deletion;
-            previous_row[j] = last_insert_cost;
+            last_substitution = deletion;
+            previous_row[j] = last_insert;
         }
     }
 
