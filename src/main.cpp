@@ -9,7 +9,6 @@
 int main(int argc, char *argv[])
 {
     int size = 20;
-    int *array = new int[size];
 
     if (!argv || !argv[1] || !argv[2])
     {
@@ -29,10 +28,8 @@ int main(int argc, char *argv[])
 
     auto t2 = std::chrono::high_resolution_clock::now();
 
-    std::cout << "calculation time: " << std::chrono::duration<double>(t2 - t1).count() << std::endl;
-    std::cout << "levenshtein distance:" << distance << std::endl;
-
-    delete[] array;
+    std::cout << distance << std::endl;
+    std::cout << std::chrono::duration<double>(t2 - t1).count() << std::endl;
 
     return 0;
 }
