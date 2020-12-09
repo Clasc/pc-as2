@@ -10,6 +10,7 @@ class StringDistanceResolver
 {
 private:
     void print(std::vector<int>);
+    void parallel_for_loop(std::vector<bool> &, std::vector<int> &, int, int, int, string, string, bool);
 
 public:
     StringDistanceResolver(/* args */);
@@ -27,66 +28,73 @@ int StringDistanceResolver::get_distance_vec(string str_l, string str_r)
 {
     auto rows = str_l.length();
     auto cols = str_r.length();
-
     auto distance = 0;
 
-#pragma omp parallel num_threads(4)
+    std::vector<int> previous_row = std::vector<int>(cols);
+    std::vector<bool> is_locked = std::vector<bool>(rows);
+#pragma omp parallel for
+    for (int i = 0; i < cols; i++)
     {
-        std::vector<int> previous_row = std::vector<int>(cols);
+        previous_row[i] = i;
+    }
 
-        for (int i = 0; i < cols; i++)
-        {
-            previous_row[i] = i;
-        }
+#pragma omp parallel for
+    for (int i = 0; i < rows; i++)
+    {
+        is_locked[i] = true;
+    }
+
+    is_locked[0] = false;
 
 #pragma omp parallel num_threads(2)
+    {
+#pragma omp task
         {
-            auto shared_col = std::vector<int>(rows);
-#pragma omp single
-            {
-                shared_col[0] = 0;
-                for (int i = 1; i < rows; i++)
-                {
-                    shared_col[i] = -1;
-                }
-            }
+            parallel_for_loop(is_locked, previous_row, rows, 0, cols / 2, str_l, str_r, true);
+        }
 
-#pragma omp for schedule(static)
-            for (int i = 0; i < rows; ++i)
-            {
-                auto shared_col_val = i == 0 ? 0 : shared_col[i - 1];
-                while (shared_col_val == -1)
-                {
-                    // std::this_thread::sleep_for(100ms);
-                    // std::cout << "thread waits for index: " << i << "\n";
-                }
-
-                // std::cout << "thread not watiting for index: " << i << "\n";
-
-                auto last_substitution = i;
-                auto last_insert = i + 1;
-                for (int j = 0; j < cols; j++)
-                {
-                    auto deletion = previous_row[j];
-                    last_insert = get_min(last_insert, last_substitution, deletion);
-
-                    if (str_l[i] != str_r[j])
-                    {
-                        last_insert++;
-                    }
-
-                    last_substitution = deletion;
-                    previous_row[j] = last_insert;
-                }
-
-                // std::cout << "Finished calculating first row:" << previous_row[cols - 1] << std::endl;
-                shared_col[i] = previous_row[cols - 1];
-            }
-
-            distance = shared_col[rows - 1];
+#pragma omp task
+        {
+            parallel_for_loop(is_locked, previous_row, rows, cols / 2, cols, str_l, str_r, false);
         }
     }
+
+    distance = previous_row[cols - 1];
     return distance;
+}
+
+void StringDistanceResolver::parallel_for_loop(std::vector<bool> &is_locked, std::vector<int> &previous_row, int rows, int from, int to, string str_l, string str_r, bool is_leading_thread = true)
+{
+    for (int i = 0; i < rows; ++i)
+    {
+
+        if (!is_leading_thread)
+        {
+            while (is_locked[i])
+            {
+                // wait
+                //std::cout << "thread is waiting" << omp_get_thread_num() << std::endl;
+            }
+        }
+
+        auto last_substitution = i;
+        auto last_insert = i + 1;
+        for (int j = from; j < to; j++)
+        {
+            auto deletion = previous_row[j];
+            last_insert = get_min(last_insert, last_substitution, deletion);
+
+            if (str_l[i] != str_r[j])
+            {
+                last_insert++;
+            }
+
+            last_substitution = deletion;
+            previous_row[j] = last_insert;
+        }
+
+        is_locked[i + 1] = false;
+    }
 }
 
 int StringDistanceResolver::get_distance_matrix(string str_l, string str_r)
