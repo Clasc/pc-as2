@@ -1,6 +1,10 @@
 #include <string>
 #include <vector>
+#include <thread>
+#include <chrono>
+
 using string = std::string;
+using namespace std::chrono_literals;
 
 class StringDistanceResolver
 {
@@ -23,36 +27,66 @@ int StringDistanceResolver::get_distance_vec(string str_l, string str_r)
 {
     auto rows = str_l.length();
     auto cols = str_r.length();
+
     auto distance = 0;
 
-    std::vector<int> previous_row = std::vector<int>(cols);
-
-    for (int i = 0; i < cols; i++)
+#pragma omp parallel num_threads(4)
     {
-        previous_row[i] = i;
-    }
+        std::vector<int> previous_row = std::vector<int>(cols);
 
-    for (int i = 0; i < rows; i++)
-    {
-        auto last_substitution = i;
-        auto last_insert = i + 1;
-
-        for (int j = 0; j < cols; j++)
+        for (int i = 0; i < cols; i++)
         {
-            auto deletion = previous_row[j];
-            last_insert = get_min(last_insert, last_substitution, deletion);
+            previous_row[i] = i;
+        }
 
-            if (str_l[i] != str_r[j])
+#pragma omp parallel num_threads(2)
+        {
+            auto shared_col = std::vector<int>(rows);
+#pragma omp single
             {
-                last_insert++;
+                shared_col[0] = 0;
+                for (int i = 1; i < rows; i++)
+                {
+                    shared_col[i] = -1;
+                }
             }
 
-            last_substitution = deletion;
-            previous_row[j] = last_insert;
+#pragma omp for schedule(static)
+            for (int i = 0; i < rows; ++i)
+            {
+                auto shared_col_val = i == 0 ? 0 : shared_col[i - 1];
+                while (shared_col_val == -1)
+                {
+                    // std::this_thread::sleep_for(100ms);
+                    // std::cout << "thread waits for index: " << i << "\n";
+                }
+
+                // std::cout << "thread not watiting for index: " << i << "\n";
+
+                auto last_substitution = i;
+                auto last_insert = i + 1;
+                for (int j = 0; j < cols; j++)
+                {
+                    auto deletion = previous_row[j];
+                    last_insert = get_min(last_insert, last_substitution, deletion);
+
+                    if (str_l[i] != str_r[j])
+                    {
+                        last_insert++;
+                    }
+
+                    last_substitution = deletion;
+                    previous_row[j] = last_insert;
+                }
+
+                // std::cout << "Finished calculating first row:" << previous_row[cols - 1] << std::endl;
+                shared_col[i] = previous_row[cols - 1];
+            }
+
+            distance = shared_col[rows - 1];
         }
     }
-
-    return previous_row[cols - 1];
+    return distance;
 }
 
 int StringDistanceResolver::get_distance_matrix(string str_l, string str_r)

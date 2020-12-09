@@ -13,7 +13,7 @@
         {
             "label": "build single thread",
             "type": "shell",
-            "command": "g++ src/*.cpp -o out/singlethread.o",
+            "command": "g++ src/*.cpp -o out/singlethread.o -O2",
             "group": "build",
             "problemMatcher": []
         },

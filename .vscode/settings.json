@@ -44,6 +44,7 @@
         "ratio": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "thread": "cpp"
     }
 }
