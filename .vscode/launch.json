@@ -8,10 +8,10 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/out/bin",
+            "program": "${workspaceRoot}/out/singlethread.o",
             "args": [
-                "res/test1.txt",
-                "res/test2.txt"
+                "res/t1.txt",
+                "res/t2.txt"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
